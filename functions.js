@@ -11,7 +11,7 @@ function isNear(obstacleRow, obstacleCol) {
 
 function isVisible(col) {
   var refPos = ~~(playerXPos/tileSize);
-  if((col<refPos+62 && ( refPos<12 || col>refPos-12)) || refPos>levelCols/2) {
+  if((col<refPos+70 && ( refPos<12 || col>refPos-12)) || refPos>levelCols/2) {
     return true;
   }
   else return false;
@@ -26,11 +26,35 @@ function cruchBadData(row, col) {  // ligne et colonne de la mauvaise donnée
   else return false
 }
 
+function isHurt(col) {
+  if(col>3) {
+    score-=3;
+    nbLives--;
+  }
+}
+
+function isDead(colArray,rowArray,initColArray,initRowArray) {
+  colArray=[];
+  rowArray=[];
+  for(let i=0; i<initColArray.length; i++) {
+    colArray[i]=initColArray[i];
+    rowArray[i]=initRowArray[i];
+  }
+  return [colArray, rowArray]
+}
+
+function beatBackPlayer(col) {// repousser player a droite ou à gauche selon d'où il vient
+  if(col>3) {
+    if(playerXPos<col*tileSize)
+      playerXPos-=5*tileSize // force de repoussement des mauvaises données
+    else playerXPos+=5*tileSize
+  }
+}
 
 function isDown() {
   var row = ~~(playerYPos/tileSize);
   var col = ~~(playerXPos/tileSize);
-  if(row<levelRows-3) {
+  if(row<levelRows-3 && row>0) {
   if (!upPressed && ( !currentLevel[row+3][col] && !currentLevel[row+3][col+1] && !currentLevel[row+3][col+2])) {
       return false
     }
@@ -44,14 +68,6 @@ function goDown(row,col) {
       ++row
   }
   return row;
-}
-
-function beatBackPlayer(col) {// repousser player a droite ou à gauche selon d'où il vient
-  if(col>3) {
-    if(playerXPos<col*tileSize)
-      playerXPos-=3*tileSize // force de repoussement des mauvaises données
-    else playerXPos+=3*tileSize
-}
 }
 
 function datasMove () {
@@ -110,11 +126,13 @@ function obstacleMove() {
 function weakPlatform() {
   var row = ~~(playerYPos/tileSize);
   var col = ~~(playerXPos/tileSize);
-  if(currentLevel[row+3][col]===2 && currentLevel[row+3][col+1]===2 && currentLevel[row+3][col+2]===2) {
-    currentLevel[row+3][col]=0;
-    currentLevel[row+2][col]=0;
-    currentLevel[row+1][col]=0;
-    currentLevel[row][col]=0;
+  if(col+2<levelCols && row+3<levelCols && col>0 && row>0) {
+    if( currentLevel[row+3][col]===2 && currentLevel[row+3][col+1]===2 && currentLevel[row+3][col+2]===2) {
+      currentLevel[row+3][col]=0;
+      currentLevel[row+2][col]=0;
+      currentLevel[row+1][col]=0;
+      currentLevel[row][col]=0;
+    }
   }
 }
 
@@ -124,50 +142,52 @@ function rebound(level) {
   var colOverlap = playerXPos%tileSize;
   var rowOverlap = playerYPos%tileSize;
 
-  // coté droit rebondissement sur les bords des cases "1" uniquement
-  if (playerXSpeed>0) {
-    if(baseRow<levelRows-3) {
+  if (playerXSpeed>0) {    // coté droit rebondissement sur les bords 1 uniquement
+    if(baseRow<levelRows-3 && baseCol<levelCols-3) { // si on n'est pas en bas
       if((level[baseRow+2][baseCol+2]===1 && !level[baseRow+2][baseCol+1])
       || (level[baseRow+3][baseCol+2]===1 && !level[baseRow+3][baseCol+1] && rowOverlap)) {
-        if(baseRow>3) {
+        if(baseRow>=2) {
           playerXPos=(baseCol-2)*tileSize;
-          playerYPos=(baseRow-2)*tileSize; // -3 pour faire remonter par le rebond
+          playerYPos=(baseRow-2)*tileSize;
         }
-        else { // limite haut droit
+        else {  // cas en haut de la map
           playerXPos=(baseCol-2)*tileSize;
-          playerYPos=(baseRow-2)*tileSize; // -3 pour faire remonter par le rebond
-        }
-      }
-    }
-    else { // cas en bas de la map => baseRow+3 undefined (pas de valeur sous les pieds du personnage)
-      if((level[baseRow][baseCol+2]===1 && !level[baseRow][baseCol+1])
-      || (level[baseRow+1][baseCol+2]===1 && !level[baseRow+1][baseCol+1] && rowOverlap)) {
-        playerXPos=(baseCol-2)*tileSize;
-        playerYPos=(baseRow-2)*tileSize; // -3 pour faire remonter par le rebond
-      }
-    }
-  }
-
-  // coté gauche rebondissement sur les bords 1 uniquement
-  if (playerXSpeed<0) {
-    if(baseRow<levelRows-3) {
-      if ((!level[baseRow+2][baseCol+1] && level[baseRow+2][baseCol]===1)
-      || (!level[baseRow+3][baseCol+1] && level[baseRow+3][baseCol]===1 && rowOverlap)) {
-        if(baseRow>3) {
-          playerXPos=(baseCol+3)*tileSize;
-          playerYPos=(baseRow-2)*tileSize;   // -3 pour faire remonter par le rebond
-        }
-        else { // gère la limite coin haut gauche
-          playerXPos=(baseCol+1)*tileSize;
           playerYPos=(baseRow+1)*tileSize;
         }
       }
     }
-    else { // cas en bas de la map => baseRow+3 undefined (pas de valeur sous les pieds du personnage)
-      if((!level[baseRow][baseCol+1] && level[baseRow][baseCol])
-      || (!level[baseRow+1][baseCol+1] && level[baseRow+1][baseCol] && rowOverlap)) {
-        playerXPos=(baseCol+3)*tileSize;
-        playerYPos=(baseRow-3)*tileSize;
+    else {
+      if(baseRow>=levelRows-3) {  // cas en bas de la map => pas utile car on meurt en arrivant en bas
+        if((level[baseRow][baseCol+2]===1 && !level[baseRow][baseCol+1])
+        || (level[baseRow+1][baseCol+2]===1 && !level[baseRow+1][baseCol+1] && rowOverlap)) {
+          playerXPos=(baseCol-2)*tileSize;
+          playerYPos=(baseRow-2)*tileSize;
+        }
+      }
+    }
+  }
+
+  if (playerXSpeed<0) {    // coté gauche rebondissement sur les bords 1 uniquement
+    if(baseRow<levelRows-3) {
+      if ((!level[baseRow+2][baseCol+1] && level[baseRow+2][baseCol]===1)
+      || (!level[baseRow+3][baseCol+1] && level[baseRow+3][baseCol]===1 && rowOverlap)) {
+        if(baseRow>=2) {
+          playerXPos=(baseCol+3)*tileSize;
+          playerYPos=(baseRow-2)*tileSize;
+        }
+        else {  // cas en haut de la map
+          playerXPos=(baseCol+3)*tileSize;
+          playerYPos=(baseRow+1)*tileSize;
+        }
+      }
+    }
+    else { // cas en bas de la map => pas utile car on meurt en arrivant en bas
+      if(baseRow>=levelRows-3) {
+        if((!level[baseRow][baseCol+1] && level[baseRow][baseCol])
+        || (!level[baseRow+1][baseCol+1] && level[baseRow+1][baseCol] && rowOverlap)) {
+          playerXPos=(baseCol+3)*tileSize;
+          playerYPos=(baseRow-3)*tileSize;
+        }
       }
     }
   }
@@ -179,19 +199,20 @@ function verticalCollision(level) {
   var colOverlap = playerXPos%tileSize;
   var rowOverlap = playerYPos%tileSize;
 
-  if(playerYSpeed>0){
-    if((level[baseRow+1][baseCol] && !level[baseRow][baseCol]) || (level[baseRow+1][baseCol+1] && !level[baseRow][baseCol+1] && colOverlap)){
-      playerYPos = baseRow*tileSize;
-      console.log('coté 1')
-    }
-  }
   // vers le haut
   if(playerYSpeed<0){
-    if((!level[baseRow+1][baseCol] && level[baseRow][baseCol])
-    || (!level[baseRow+1][baseCol+1] && level[baseRow][baseCol+1])
-    || (!level[baseRow+1][baseCol+2] && level[baseRow][baseCol+2])
-    || (!level[baseRow+1][baseCol+1] && level[baseRow][baseCol+1] && colOverlap)  ) {
+    if(baseCol<levelCols-3 && baseRow>0)  {
+      if((!level[baseRow+1][baseCol] && level[baseRow][baseCol])
+      || (!level[baseRow+1][baseCol+1] && level[baseRow][baseCol+1])
+      || (!level[baseRow+1][baseCol+2] && level[baseRow][baseCol+2])
+      || (!level[baseRow+1][baseCol+1] && level[baseRow][baseCol+1] && colOverlap)  ) {
+        playerYPos = (baseRow+1)*tileSize;
+      }
+    }
+    else {
+  //    console.log("dedans")
       playerYPos = (baseRow+1)*tileSize;
     }
   }
+
 }

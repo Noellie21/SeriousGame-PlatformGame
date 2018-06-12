@@ -51,6 +51,7 @@ function renderLevel(){
       pause=true;
       setTimeout(()=>{
         pause=false;
+        nbLives=5;
       },5000)
     }
 

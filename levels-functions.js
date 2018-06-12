@@ -25,14 +25,13 @@ function level1Mechanics() {
   for (k=0; k<badDataRow.length; k++) {
     context.drawImage(imgBadData, badDataCol[k]*tileSize,badDataRow[k]*tileSize,tileSize*3,tileSize*3);
     if(isNear(badDataRow[k],badDataCol[k])) {
-      score-=3;
-      nbLives--;
-      if(nbLives<1) {
-        badDataCol=initBadDataCol;
-        badDataRow=initBadDataRow;
-      }
-
+      isHurt(badDataCol[k]);
       beatBackPlayer(badDataCol[k])
+      if(nbLives<1) {
+        var res = isDead(badDataCol,badDataRow,initBadDataCol,initBadDataRow)
+        badDataCol = res[0];
+        badDataRow = res[1];
+      }
     }
     if (cruchBadData(badDataRow[k],badDataCol[k])) {
       badDataRow.splice(k,1);
@@ -62,12 +61,14 @@ function level2Mechanics() {
       context.drawImage(imgWheel, (obstacleCol[k])*tileSize,(obstacleRow[k])*tileSize,tileSize*2,tileSize*2);
     }
     if(isNear(obstacleRow[k],obstacleCol[k])) {
-      score-=3;
-      nbLives--;
+      isHurt(obstacleCol[k]);
       if(nbLives<1) {
-        obstacleCol=initObstacleCol;
-        obstacleRow=initObstacleRow;
+        var res = isDead(obstacleCol,obstacleRow,initObstacleCol,initObstacleRow)
+        obstacleCol = res[0];
+        obstacleRow = res[1];
       }
+
+
       beatBackPlayer(obstacleCol[k])
     }
   }
@@ -84,6 +85,8 @@ function level3Mechanics() {
     nbHeart++;
     }
   }
-  context.drawImage(imgHeart, 65*tileSize, 4.5*tileSize,tileSize*2,tileSize*2);
-  context.fillText("X "+nbHeart,68*tileSize, 6*tileSize);
+  context.fillStyle = "rgba(0, 0, 0, 0.2)";
+  context.font="16px Arial";
+  context.drawImage(imgHeart, 65*tileSize-totalTranslateCameraX, 4.5*tileSize,tileSize*2,tileSize*2);
+  context.fillText("X "+nbHeart,68*tileSize-totalTranslateCameraX, 6*tileSize);
 }

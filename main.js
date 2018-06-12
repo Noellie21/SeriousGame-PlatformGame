@@ -12,11 +12,10 @@ window.requestAnimFrame = (function(callback) {
   };
 })();
 
-// mouvement des bonnes et mauvaises données
-setInterval(datasMove, 300)
-setInterval(obstacleMove, 200)
-// timer
-setInterval(function(){ {
+
+setInterval(datasMove, 300) // mouvement des bonnes et mauvaises données
+setInterval(obstacleMove, 200) // mouvement des obstacles
+setInterval(function() {  // timer
   if(!pause) {
     timer[0]++;
     if(timer[0]==60) {
@@ -24,9 +23,9 @@ setInterval(function(){ {
       timer[1]++;
     }
   }
-} }, 1000);
+ }, 1000);
 
-setInterval(function(){   // tt les 2 secondes, ajouter un obstacle de la liste
+setInterval(function(){   // tt les 2 secondes, ajouter un obstacle de la liste si celui ci est dans la zone visible
   if( isVisible(initObstacleCol[obstacleIndex%initObstacleRow.length]) && !pause) {
     obstacleRow.push(initObstacleRow[obstacleIndex%initObstacleRow.length])
     obstacleCol.push(initObstacleCol[obstacleIndex%initObstacleRow.length])
@@ -44,8 +43,7 @@ setInterval(()=> { // faire défiler les sprites
 },200)
 
 
-// function to handle the game itself
-function updateGame() {
+function updateGame() { // function to handle the game itself
 
   // no friction or inertia at the moment, so at every frame initial speed is set to zero
   playerXSpeed=0;
@@ -78,7 +76,7 @@ function updateGame() {
 
   playerXPos+=playerXSpeed;
 
-   weakPlatform();
+   weakPlatform();  // fonction qui permet les plateformes qui se détruisent
 
   rebound(currentLevel); // rebondissements droite et gauche - collisions horizontales
   verticalCollision(currentLevel); // check for vertical collisions
@@ -89,14 +87,13 @@ function updateGame() {
   }
   else {
     lockKeyup = false;
-    if(~~((playerYPos)/tileSize) > levelRows-5)
+    if(~~((playerYPos)/tileSize) > levelRows-5)  // chute au fond d'un gouffre
       playerDead=true;
   };
   if(nbLives<1) {// retourner a la porte si le joueur n'a plus de vie
     playerDead=true;
-    nbLives=5;
   }
-
+  //console.log(Math.abs(playerXPos-oldPlayerPosX))
   if(playerXPos>translateOffset && playerXPos/tileSize<83) {// 83 == colonne à partir de laquelle la dernière colonne du niveau est affichée
     totalTranslateCameraX += oldPlayerPosX-playerXPos;
     context.translate(oldPlayerPosX-playerXPos,0);
