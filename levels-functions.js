@@ -27,11 +27,6 @@ function level1Mechanics() {
     if(isNear(badDataRow[k],badDataCol[k])) {
       isHurt(badDataCol[k]);
       beatBackPlayer(badDataCol[k])
-      if(nbLives<1) {
-        var res = isDead(badDataCol,badDataRow,initBadDataCol,initBadDataRow)
-        badDataCol = res[0];
-        badDataRow = res[1];
-      }
     }
     if (cruchBadData(badDataRow[k],badDataCol[k])) {
       badDataRow.splice(k,1);
@@ -62,14 +57,14 @@ function level2Mechanics() {
     }
     if(isNear(obstacleRow[k],obstacleCol[k])) {
       isHurt(obstacleCol[k]);
-      if(nbLives<1) {
+      beatBackPlayer(obstacleCol[k]);
+/*      if(nbLives<1) {
         var res = isDead(obstacleCol,obstacleRow,initObstacleCol,initObstacleRow)
         obstacleCol = res[0];
         obstacleRow = res[1];
-      }
+      }*/
 
 
-      beatBackPlayer(obstacleCol[k])
     }
   }
   if(isNear(21,60+73) && !anomaly) // position du gros obstacle

@@ -3,55 +3,56 @@
 function renderLevel(){
   // clear the canvas
   context.clearRect(0, 0, canvas.width, canvas.height);
-  // walls = red boxes
+
+
+//image de fond
+context.drawImage(imgBackground,tileSize,tileSize,tileSize*levelCols,tileSize*levelRows);
+
+if(currentLevel===level1) {
+  level1Mechanics();
+}
+if(currentLevel===level2) {
+  level2Mechanics();
+}
+
+if(currentLevel===level3) {
+  level3Mechanics();
+}
 
   for(i=0;i<levelRows;i++){
     for(j=0;j<levelCols;j++){
+
       if(currentLevel[i][j]==1 || currentLevel[i][j]==6){
-        context.fillStyle = "#7fbdd4"; // bleu clair
+        context.fillStyle = "#a76f05"; // marron clair
         context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
       }
+
       if(currentLevel[i][j]==3 || currentLevel[i][j]==2){
-        context.fillStyle = "#050c72"; // bleu foncé
+        context.fillStyle = "#5e3f03"; // bleu foncé
         context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
       }
       if(currentLevel[i][j]==4){
-        context.fillStyle = "#7fbdd4"; // bleu clair
+        context.fillStyle = "#a76f05"; // marron clair
         context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
       }
       if(currentLevel[i][j]==5){
         context.fillStyle = "#aeaca2"; // gris clair
         context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
       }
-      if(currentLevel[i][j]==7){
-        context.fillStyle = "#f69113"; // gris clair
-        context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
-      }
-      if(currentLevel[i][j]==0){
-        context.fillStyle = "#aeaca2"; // gris clair
-        context.clearRect(j*tileSize,i*tileSize,tileSize,tileSize);
-      }
+/*     if(currentLevel[i][j]==0){
+        context.clearRect(j*tileSize,i*tileSize,tileSize,tileSize); // permettait d'effécer les répétitions avant d'avoir l'image de fond
+      }*/
     }
   }
 
-  if(currentLevel===level1) {
-    level1Mechanics();
-  }
-  if(currentLevel===level2) {
-    level2Mechanics();
-  }
-
-  if(currentLevel===level3) {
-    level3Mechanics();
-  }
 
   // player = green box
   if(levelChanged || playerDead) {
     if(playerDead) {
       pause=true;
+      nbLives=5;
       setTimeout(()=>{
         pause=false;
-        nbLives=5;
       },5000)
     }
 

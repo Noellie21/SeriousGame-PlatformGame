@@ -29,7 +29,7 @@ function cruchBadData(row, col) {  // ligne et colonne de la mauvaise donnée
 function isHurt(col) {
   if(col>3) {
     score-=3;
-    nbLives--;
+    nbLives-=1;
   }
 }
 
@@ -44,10 +44,15 @@ function isDead(colArray,rowArray,initColArray,initRowArray) {
 }
 
 function beatBackPlayer(col) {// repousser player a droite ou à gauche selon d'où il vient
+  var playerCol = ~~(playerXPos/tileSize);
+  var playerRow = ~~(playerYPos/tileSize);
   if(col>3) {
-    if(playerXPos<col*tileSize)
+    if( (playerXPos<col*tileSize && (currentLevel[playerRow][playerCol-1]===0 || currentLevel[playerRow][playerCol-2]===0 || currentLevel[playerRow][playerCol-3]===0 || currentLevel[playerRow][playerCol-4]===0 || currentLevel[playerRow][playerCol-4]===0) )
+    || (currentLevel[playerRow][playerCol+3] || currentLevel[playerRow][playerCol+4] || currentLevel[playerRow][playerCol+5] || currentLevel[playerRow][playerCol+6] || currentLevel[playerRow][playerCol+7]) )
       playerXPos-=5*tileSize // force de repoussement des mauvaises données
-    else playerXPos+=5*tileSize
+    if( (playerXPos>col*tileSize && (currentLevel[playerRow][playerCol+3]===0 || currentLevel[playerRow][playerCol+4]===0 || currentLevel[playerRow][playerCol+5]===0 || currentLevel[playerRow][playerCol+6]===0 || currentLevel[playerRow][playerCol+7]===0) )
+    || (currentLevel[playerRow][playerCol-1] || currentLevel[playerRow][playerCol-2] || currentLevel[playerRow][playerCol-3] || currentLevel[playerRow][playerCol-4] || currentLevel[playerRow][playerCol-5]) )
+    playerXPos+=5*tileSize
   }
 }
 

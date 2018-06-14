@@ -66,18 +66,21 @@ function updateGame() { // function to handle the game itself
     upPressed=false;
   }
 
+  // pour ne pas faire dépendre la hauteur des saut à la durée d'appui sur la touche
+  /*if(upPressed){ // limite la durée des sauts
+    playerYSpeed=-10*tileSize; // limite la vitesse des sauts
+    upPressed=false;
+  }*/
 
-  // updating player position
-  var offset = (playerYPos+playerYSpeed)%tileSize
 
-  if(offset !== 0 && (isDown() && !upPressed)) // ne pas pouvoir sauter et arriver dans l'épaisseur des plateformes
+  var offset = (playerYPos+playerYSpeed)%tileSize // ne pas pouvoir sauter et arriver dans l'épaisseur des plateformes
+  if(offset !== 0 && (isDown() && !upPressed)) // mise à jour de la position du joueur
     playerYPos+=playerYSpeed-offset;
   else playerYPos+=playerYSpeed;
 
   playerXPos+=playerXSpeed;
 
-   weakPlatform();  // fonction qui permet les plateformes qui se détruisent
-
+  weakPlatform();  // fonction qui permet les plateformes qui se détruisent
   rebound(currentLevel); // rebondissements droite et gauche - collisions horizontales
   verticalCollision(currentLevel); // check for vertical collisions
   if(!isDown()) {  // faire descendre le personnage si aucun sol sous sa position
@@ -87,17 +90,36 @@ function updateGame() { // function to handle the game itself
   }
   else {
     lockKeyup = false;
-    if(~~((playerYPos)/tileSize) > levelRows-5)  // chute au fond d'un gouffre
-      playerDead=true;
+    if(~~((playerYPos)/tileSize) > levelRows-5)  {// chute au fond d'un gouffre fait perdre toutes ses vies
+      nbLives=0;
+    }
   };
-  if(nbLives<1) {// retourner a la porte si le joueur n'a plus de vie
+
+  // gestion de la mort du joueur
+  if(nbLives<1 ) {
     playerDead=true;
+    if(currentLevel===level1) {
+      var res = isDead(badDataCol,badDataRow,initBadDataCol,initBadDataRow)
+      badDataCol = res[0];
+      badDataRow = res[1];
+    }
+    if(currentLevel===level2) {
+      var res = isDead(obstacleCol,obstacleRow,initObstacleCol,initObstacleRow)
+      obstacleCol = res[0];
+      obstacleRow = res[1];
+    }
   }
+
+
   //console.log(Math.abs(playerXPos-oldPlayerPosX))
   if(playerXPos>translateOffset && playerXPos/tileSize<83) {// 83 == colonne à partir de laquelle la dernière colonne du niveau est affichée
     totalTranslateCameraX += oldPlayerPosX-playerXPos;
     context.translate(oldPlayerPosX-playerXPos,0);
   }
+  if(playerXPos<translateOffset) {
+    context.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
   oldPlayerPosX=playerXPos;
 
   // rendering level
