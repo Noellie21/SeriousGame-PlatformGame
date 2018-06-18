@@ -3,8 +3,8 @@
 function isNear(obstacleRow, obstacleCol) {
   var playerRow = ~~(playerYPos/tileSize);
   var playerCol = ~~(playerXPos/tileSize);
-  if( ( playerRow==obstacleRow || playerRow==obstacleRow+1 || playerRow==obstacleRow-1 || playerRow==obstacleRow+2|| playerRow==obstacleRow-2)
-&& ( playerCol==obstacleCol-2 || playerCol==obstacleCol+2 || playerCol==obstacleCol+1 || playerCol==obstacleCol-1 || playerCol==obstacleCol))
+  if( ( playerRow==obstacleRow || playerRow==obstacleRow+1 || playerRow==obstacleRow-1 || playerRow==obstacleRow+2) //|| playerRow==obstacleRow+3
+&& ( playerCol==obstacleCol+2 || playerCol==obstacleCol+1 || playerCol==obstacleCol-1 || playerCol==obstacleCol)) //playerCol==obstacleCol+3 ||
     return true
   else return false
 }
@@ -30,6 +30,11 @@ function isHurt(col) {
   if(col>3) {
     score-=3;
     nbLives-=1;
+    if(currentLevel==level1){
+      points.hurtBadData=true;
+    }
+    if(currentLevel==level2)
+      points.obstacle=true;
   }
 }
 
@@ -103,8 +108,8 @@ function obstacleMove() {
   if(currentLevel===level2 && !pause) {
     for(let k=0; k<obstacleCol.length; k++) {
       if(isVisible(obstacleCol[k])) {   // faire bouger lorque l'obstacle apprait sur l'écran
-        if(obstacleCol[k]<50 ||  obstacleCol[k]>72) { // zone contenant des roues
-          if(obstacleCol[k]>2 && obstacleCol[k]<levelCols-2) {
+        if(obstacleCol[k]<50 ||  obstacleCol[k]>93) { // zone contenant des roues
+          if(obstacleCol[k]>1 && obstacleCol[k]<levelCols-2 && obstacleRow[k]<levelRows-1) {
             if(currentLevel[obstacleRow[k]+2][obstacleCol[k]+1]==0)
               ++obstacleRow[k];
             else --obstacleCol[k]
@@ -147,13 +152,22 @@ function rebound(level) {
   var colOverlap = playerXPos%tileSize;
   var rowOverlap = playerYPos%tileSize;
 
+
+
   if (playerXSpeed>0) {    // coté droit rebondissement sur les bords 1 uniquement
     if(baseRow<levelRows-3 && baseCol<levelCols-3) { // si on n'est pas en bas
-      if((level[baseRow+2][baseCol+2]===1 && !level[baseRow+2][baseCol+1])
-      || (level[baseRow+3][baseCol+2]===1 && !level[baseRow+3][baseCol+1] && rowOverlap)) {
+      if( (level[baseRow+2][baseCol+2]===1 && !level[baseRow+2][baseCol+1])
+      || (level[baseRow+3][baseCol+2]===1 && !level[baseRow+3][baseCol+1] && rowOverlap) ) {
         if(baseRow>=2) {
-          playerXPos=(baseCol-2)*tileSize;
-          playerYPos=(baseRow-2)*tileSize;
+          if(!level[baseRow-1][baseCol] && !level[baseRow-1][baseCol-1] && !level[baseRow-1][baseCol-2]) {
+            playerXPos=(baseCol-2)*tileSize;
+            playerYPos=(baseRow-2)*tileSize;
+          }
+          else {
+            playerXPos=(baseCol-2)*tileSize;
+            playerYPos=(baseRow)*tileSize;
+          }
+
         }
         else {  // cas en haut de la map
           playerXPos=(baseCol-2)*tileSize;
@@ -174,11 +188,18 @@ function rebound(level) {
 
   if (playerXSpeed<0) {    // coté gauche rebondissement sur les bords 1 uniquement
     if(baseRow<levelRows-3) {
-      if ((!level[baseRow+2][baseCol+1] && level[baseRow+2][baseCol]===1)
-      || (!level[baseRow+3][baseCol+1] && level[baseRow+3][baseCol]===1 && rowOverlap)) {
+      if ( (!level[baseRow+2][baseCol+1] && level[baseRow+2][baseCol]===1)
+      || (!level[baseRow+3][baseCol+1] && level[baseRow+3][baseCol]===1 && rowOverlap) ) {
         if(baseRow>=2) {
-          playerXPos=(baseCol+3)*tileSize;
-          playerYPos=(baseRow-2)*tileSize;
+          if(!level[baseRow-1][baseCol+2] && !level[baseRow-1][baseCol+3]) {
+            playerXPos=(baseCol+3)*tileSize;
+            playerYPos=(baseRow-2)*tileSize;
+          }
+          else {
+            playerXPos=(baseCol+3)*tileSize;
+            playerYPos=(baseRow)*tileSize;
+          }
+
         }
         else {  // cas en haut de la map
           playerXPos=(baseCol+3)*tileSize;
@@ -215,7 +236,6 @@ function verticalCollision(level) {
       }
     }
     else {
-  //    console.log("dedans")
       playerYPos = (baseRow+1)*tileSize;
     }
   }

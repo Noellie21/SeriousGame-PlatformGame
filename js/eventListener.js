@@ -1,19 +1,22 @@
 // simple WASD listeners
 document.addEventListener("keydown", function(e){
   switch(e.keyCode){
+    case 81: // q
     case 37:
       if(!pause) {
         leftPressed=true;
         upPressed=false;
       }
       break;
-    case 38:
+    case 90: // z
+    case 38: // espace
     case 32:
       if(!lockKeyup && !pause)
         upPressed=true;
       else
         upPressed=false;
       break;
+    case 68: // d
     case 39:
       if(!pause) {
         rightPressed=true;
@@ -26,6 +29,9 @@ document.addEventListener("keydown", function(e){
       break;
     case 80:
       pause=!pause;
+      if(pause===true)
+        imgBCBS.style.visibility="visible";
+      else imgBCBS.style.visibility="hidden";
   }
 }, false);
 

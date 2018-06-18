@@ -6,18 +6,9 @@ function renderLevel(){
 
 
 //image de fond
-context.drawImage(imgBackground,tileSize,tileSize,tileSize*levelCols,tileSize*levelRows);
+//context.drawImage(imgBackground,tileSize,tileSize,tileSize*levelCols,tileSize*levelRows);
 
-if(currentLevel===level1) {
-  level1Mechanics();
-}
-if(currentLevel===level2) {
-  level2Mechanics();
-}
 
-if(currentLevel===level3) {
-  level3Mechanics();
-}
 
   for(i=0;i<levelRows;i++){
     for(j=0;j<levelCols;j++){
@@ -39,11 +30,46 @@ if(currentLevel===level3) {
         context.fillStyle = "#aeaca2"; // gris clair
         context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
       }
-/*     if(currentLevel[i][j]==0){
+     if(currentLevel[i][j]==0){
         context.clearRect(j*tileSize,i*tileSize,tileSize,tileSize); // permettait d'effécer les répétitions avant d'avoir l'image de fond
-      }*/
+      }
     }
   }
+  if(currentLevel===level1) {
+    level1Mechanics();
+  }
+  if(currentLevel===level2) {
+    level2Mechanics();
+  }
+
+  if(currentLevel===level3) {
+    level3Mechanics();
+  }
+
+  context.fillStyle = "rgba(0, 0, 0, 0.5)";
+  context.font="15px Arial";
+  if(points.obstacle || points.hurtBadData) {
+
+    context.fillText("-3 pts",playerXPos,playerYPos-tileSize)
+    setTimeout(()=>{
+      points.obstacle=false;
+      points.hurtBadData=false;
+    },1000);
+  }
+
+if(points.goodData || points.heart) {
+  context.fillText("+10 pts",playerXPos,playerYPos-tileSize)
+  setTimeout(()=>{
+    points.goodData=false;
+    points.heart=false;
+  },1000);
+}
+if(points.killBadData) {
+  context.fillText("+3 pts",playerXPos,playerYPos-tileSize)
+  setTimeout(()=>{
+    points.killBadData=false;
+  },1000);
+}
 
 
   // player = green box
@@ -84,14 +110,14 @@ context.fillText("X "+nbLives,5*tileSize-totalTranslateCameraX, 3*tileSize);
   if(timer[0]<10)
     context.fillText( timer[1]+":0"+timer[0],61*tileSize-totalTranslateCameraX,3*tileSize)
   else context.fillText( timer[1]+":"+timer[0],61*tileSize-totalTranslateCameraX,3*tileSize)
-  if(nbGoodData>=nbGoodDataNeeded && currentLevel===level1) {
+/*  if(nbGoodData>=nbGoodDataNeeded && currentLevel===level1) {
     context.fillStyle = "rgba(0, 0, 0, 0.4)";
     context.fillRect(16*tileSize-totalTranslateCameraX,24*tileSize,35*tileSize,7*tileSize);
     context.fillStyle = "white";
     context.font="16px Arial";
     context.fillText("Bravo ! Vous avez constitu"+String.fromCharCode(233)+" votre "+String.fromCharCode(233)+"quipe" ,18*tileSize-totalTranslateCameraX,27*tileSize)
     context.fillText( "avec succ"+String.fromCharCode(232)+"s ",18*tileSize-totalTranslateCameraX,29*tileSize)
-  }
+  }*/
 
 
   if(pause) {

@@ -1,0 +1,39 @@
+body{
+  margin:center;
+}
+
+@font-face {
+  font-family: "Lato";
+  src: url('Lato-Regular.ttf');
+}
+
+#messages {
+  position:absolute;
+  left:0px;
+  bottom:0px;
+  width:100%;
+  height: 100%;
+  text-align: center;
+}
+#canvas {
+  position:relative;
+}
+span {
+  left: 20%;
+  right:20%;;
+  color:white;
+  text-align: center;
+  display: block;
+  font-family: "Lato", Arial;
+  font-size: 18px;
+  position:absolute;
+  bottom:100px;
+}
+
+img {
+  position:absolute;
+  left:0px;
+  height: 100%;
+  -webkit-transition: width 2s; /* Safari */
+    transition: width 2s;
+}

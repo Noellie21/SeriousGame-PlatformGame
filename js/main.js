@@ -26,12 +26,14 @@ setInterval(function() {  // timer
  }, 1000);
 
 setInterval(function(){   // tt les 2 secondes, ajouter un obstacle de la liste si celui ci est dans la zone visible
-  if( isVisible(initObstacleCol[obstacleIndex%initObstacleRow.length]) && !pause) {
-    obstacleRow.push(initObstacleRow[obstacleIndex%initObstacleRow.length])
-    obstacleCol.push(initObstacleCol[obstacleIndex%initObstacleRow.length])
-  }
+  var obstacleAdded = false;
+  while(!isVisible(initObstacleCol[obstacleIndex%initObstacleRow.length]) && !pause)
+    obstacleIndex++;
+  obstacleRow.push(initObstacleRow[obstacleIndex%initObstacleRow.length])
+  obstacleCol.push(initObstacleCol[obstacleIndex%initObstacleRow.length])
   obstacleIndex++;
-}, 2000);
+
+}, 4000);
 
 setInterval(()=> { // faire défiler les sprites
   if(leftPressed && !rightPressed)
@@ -43,7 +45,12 @@ setInterval(()=> { // faire défiler les sprites
 },200)
 
 
+
+
+
 function updateGame() { // function to handle the game itself
+
+//messages();
 
   // no friction or inertia at the moment, so at every frame initial speed is set to zero
   playerXSpeed=0;
@@ -80,7 +87,7 @@ function updateGame() { // function to handle the game itself
 
   playerXPos+=playerXSpeed;
 
-  weakPlatform();  // fonction qui permet les plateformes qui se détruisent
+  //eakPlatform();  // fonction qui permet les plateformes qui se détruisent
   rebound(currentLevel); // rebondissements droite et gauche - collisions horizontales
   verticalCollision(currentLevel); // check for vertical collisions
   if(!isDown()) {  // faire descendre le personnage si aucun sol sous sa position
@@ -124,7 +131,6 @@ function updateGame() { // function to handle the game itself
 
   // rendering level
   renderLevel();
-
   // update the game in about 1/60 seconds
   requestAnimFrame(function() {
     updateGame();

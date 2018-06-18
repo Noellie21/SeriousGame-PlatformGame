@@ -8,6 +8,7 @@ function level1Mechanics() {
   for (k=0; k<goodDataRow.length; k++) {
     context.drawImage(imgGoodData, (goodDataCol[k]-randPositionGoodData[k])*tileSize,goodDataRow[k]*tileSize,tileSize*3,tileSize*3);
      if (isNear(goodDataRow[k],goodDataCol[k]-randPositionGoodData[k])) {
+      points.goodData=true;
       score+=10;
       nbGoodData++;
       goodDataRow.splice(k,1);
@@ -32,6 +33,7 @@ function level1Mechanics() {
       badDataRow.splice(k,1);
       badDataCol.splice(k,1);
       score+=3;
+      points.killBadData=true;
     }
   }
 }
@@ -43,14 +45,14 @@ function displayAnomaly() {
     pause=false;
     currentLevel=level3;
     levelChanged=true;
-  },2000); // durée d'affichage de l'anomalie
+  },5000); // durée d'affichage de l'anomalie
 }
 
 function level2Mechanics() {
   context.drawImage(imgBigObstacle, (60+73)*tileSize,15*tileSize,tileSize*7,tileSize*7);
 
   for (k=0; k<obstacleRow.length; k++) {
-    if(obstacleCol[k]>50 && obstacleCol[k]<72) {
+    if(obstacleCol[k]>50 && obstacleCol[k]<90) {
       context.drawImage(imgStone, (obstacleCol[k])*tileSize,(obstacleRow[k])*tileSize,tileSize*2,tileSize*3);
     } else {
       context.drawImage(imgWheel, (obstacleCol[k])*tileSize,(obstacleRow[k])*tileSize,tileSize*2,tileSize*2);
@@ -58,25 +60,20 @@ function level2Mechanics() {
     if(isNear(obstacleRow[k],obstacleCol[k])) {
       isHurt(obstacleCol[k]);
       beatBackPlayer(obstacleCol[k]);
-/*      if(nbLives<1) {
-        var res = isDead(obstacleCol,obstacleRow,initObstacleCol,initObstacleRow)
-        obstacleCol = res[0];
-        obstacleRow = res[1];
-      }*/
-
-
     }
   }
-  if(isNear(21,60+73) && !anomaly) // position du gros obstacle
+  if(isNear(19,60+73) && !anomaly) // position du gros obstacle
     displayAnomaly();
 }
 
 function level3Mechanics() {
+
   for (k=0; k<heartRow.length; k++) {
     context.drawImage(imgHeart,heartCol[k]*tileSize,heartRow[k]*tileSize,tileSize,tileSize);
   if(isNear(heartRow[k],heartCol[k])) {
     heartRow.splice(k,1);
     heartCol.splice(k,1);
+    points.heart=true;
     nbHeart++;
     }
   }
