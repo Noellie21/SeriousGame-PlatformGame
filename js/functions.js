@@ -11,7 +11,7 @@ function isNear(obstacleRow, obstacleCol) {
 
 function isVisible(col) {
   var refPos = ~~(playerXPos/tileSize);
-  if((col<refPos+70 && ( refPos<12 || col>refPos-12)) || refPos>levelCols/2) {
+  if((col<refPos+70 && ( refPos<15 || col>refPos-15)) || refPos>levelCols/2) {
     return true;
   }
   else return false;
@@ -27,15 +27,21 @@ function cruchBadData(row, col) {  // ligne et colonne de la mauvaise donnée
 }
 
 function isHurt(col) {
-  if(col>3) {
-    score-=3;
+  if(col>3 && !alreadyHurt) {
+    if(score>0) 
+      score-=3;
     nbLives-=1;
+    alreadyHurt = true;
     if(currentLevel==level1){
+      nbBadData++;
       points.hurtBadData=true;
     }
     if(currentLevel==level2)
       points.obstacle=true;
   }
+  setTimeout(() => {
+    alreadyHurt = false;
+  },500)
 }
 
 function isDead(colArray,rowArray,initColArray,initRowArray) {
@@ -66,6 +72,7 @@ function isDown() {
   var col = ~~(playerXPos/tileSize);
   if(row<levelRows-3 && row>0) {
   if (!upPressed && ( !currentLevel[row+3][col] && !currentLevel[row+3][col+1] && !currentLevel[row+3][col+2])) {
+
       return false
     }
     else return true
@@ -146,74 +153,24 @@ function weakPlatform() {
   }
 }
 
-function rebound(level) {
+function horizontalCollision(level) {
   var baseCol = ~~((playerXPos)/tileSize);
   var baseRow = ~~((playerYPos)/tileSize);
-  var colOverlap = playerXPos%tileSize;
-  var rowOverlap = playerYPos%tileSize;
-
-
 
   if (playerXSpeed>0) {    // coté droit rebondissement sur les bords 1 uniquement
-    if(baseRow<levelRows-3 && baseCol<levelCols-3) { // si on n'est pas en bas
-      if( (level[baseRow+2][baseCol+2]===1 && !level[baseRow+2][baseCol+1])
-      || (level[baseRow+3][baseCol+2]===1 && !level[baseRow+3][baseCol+1] && rowOverlap) ) {
-        if(baseRow>=2) {
-          if(!level[baseRow-1][baseCol] && !level[baseRow-1][baseCol-1] && !level[baseRow-1][baseCol-2]) {
-            playerXPos=(baseCol-2)*tileSize;
-            playerYPos=(baseRow-2)*tileSize;
-          }
-          else {
-            playerXPos=(baseCol-2)*tileSize;
-            playerYPos=(baseRow)*tileSize;
-          }
-
-        }
-        else {  // cas en haut de la map
-          playerXPos=(baseCol-2)*tileSize;
-          playerYPos=(baseRow+1)*tileSize;
-        }
-      }
-    }
-    else {
-      if(baseRow>=levelRows-3) {  // cas en bas de la map => pas utile car on meurt en arrivant en bas
-        if((level[baseRow][baseCol+2]===1 && !level[baseRow][baseCol+1])
-        || (level[baseRow+1][baseCol+2]===1 && !level[baseRow+1][baseCol+1] && rowOverlap)) {
-          playerXPos=(baseCol-2)*tileSize;
-          playerYPos=(baseRow-2)*tileSize;
-        }
-      }
+    if(baseRow<levelRows-2) {
+    if(level[baseRow][baseCol+3]==1 || level[baseRow+1][baseCol+3]==1 || level[baseRow+2][baseCol+3]==1)
+      playerXPos=(baseCol)*tileSize;
     }
   }
 
   if (playerXSpeed<0) {    // coté gauche rebondissement sur les bords 1 uniquement
-    if(baseRow<levelRows-3) {
-      if ( (!level[baseRow+2][baseCol+1] && level[baseRow+2][baseCol]===1)
-      || (!level[baseRow+3][baseCol+1] && level[baseRow+3][baseCol]===1 && rowOverlap) ) {
-        if(baseRow>=2) {
-          if(!level[baseRow-1][baseCol+2] && !level[baseRow-1][baseCol+3]) {
-            playerXPos=(baseCol+3)*tileSize;
-            playerYPos=(baseRow-2)*tileSize;
-          }
-          else {
-            playerXPos=(baseCol+3)*tileSize;
-            playerYPos=(baseRow)*tileSize;
-          }
-
-        }
-        else {  // cas en haut de la map
-          playerXPos=(baseCol+3)*tileSize;
-          playerYPos=(baseRow+1)*tileSize;
-        }
-      }
-    }
-    else { // cas en bas de la map => pas utile car on meurt en arrivant en bas
-      if(baseRow>=levelRows-3) {
-        if((!level[baseRow][baseCol+1] && level[baseRow][baseCol])
-        || (!level[baseRow+1][baseCol+1] && level[baseRow+1][baseCol] && rowOverlap)) {
-          playerXPos=(baseCol+3)*tileSize;
-          playerYPos=(baseRow-3)*tileSize;
-        }
+    if(baseRow<levelRows-2) {
+      if(level[baseRow][baseCol]==1 || level[baseRow+1][baseCol]==1 || level[baseRow+2][baseCol]==1) {
+        if(baseRow>=2)
+            playerXPos=(baseCol+1)*tileSize;
+        else  // cas en haut de la map
+          playerXPos=(baseCol+1)*tileSize;
       }
     }
   }
@@ -239,5 +196,21 @@ function verticalCollision(level) {
       playerYPos = (baseRow+1)*tileSize;
     }
   }
+}
 
+function rebound(level) {
+  var baseCol = ~~(playerXPos/tileSize);
+  var baseRow = ~~(playerYPos/tileSize);
+  if(lockKeyup && reboundPressed && !lockRebound) {
+    //rebond à droite
+    if(level[baseRow][baseCol+3]==1 || level[baseRow+1][baseCol+3]==1 || level[baseRow+2][baseCol+3]==1) {
+        inPropulse.active=true;
+        inPropulse.side="right";
+      }
+
+    if(level[baseRow][baseCol]==1 || level[baseRow+1][baseCol]==1 || level[baseRow+2][baseCol]==1) {
+      inPropulse.active=true;
+      inPropulse.side="left";
+    }
+  }
 }

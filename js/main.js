@@ -50,8 +50,6 @@ setInterval(()=> { // faire défiler les sprites
 
 function updateGame() { // function to handle the game itself
 
-//messages();
-
   // no friction or inertia at the moment, so at every frame initial speed is set to zero
   playerXSpeed=0;
   playerYSpeed=0;
@@ -65,6 +63,7 @@ function updateGame() { // function to handle the game itself
   }
   // gère la hauteur des sauts
   if(upPressed && nbUp<upMax){ // limite la durée des sauts
+    upPressed=true;
     playerYSpeed=-3*movementSpeed; // limite la vitesse des sauts
     nbUp++
   }
@@ -73,12 +72,47 @@ function updateGame() { // function to handle the game itself
     upPressed=false;
   }
 
-  // pour ne pas faire dépendre la hauteur des saut à la durée d'appui sur la touche
-  /*if(upPressed){ // limite la durée des sauts
-    playerYSpeed=-10*tileSize; // limite la vitesse des sauts
-    upPressed=false;
-  }*/
+  if(inPropulse.active) {
+    if(inPropulse.since<bouncePathRow.length) {
+      var baseCol = ~~(playerXPos/tileSize);
+      var baseRow = ~~(playerYPos/tileSize);
 
+
+
+      if(inPropulse.side=="right") {
+        if(!currentLevel[baseRow-1][baseCol+1]){
+          playerXPos-=tileSize;
+          playerYSpeed = bouncePathRow[inPropulse.since]*movementSpeed;
+          playerYPos+=playerYSpeed;
+        }
+        else {
+          leftWall=true;
+          inPropulse.side="left";
+        }
+      }
+
+      if(inPropulse.side=="left") {
+        if(!currentLevel[baseRow+1][baseCol+3]){
+          playerXPos+=tileSize;
+          playerYSpeed = bouncePathRow[inPropulse.since]*movementSpeed;
+          playerYPos+=playerYSpeed;
+        }
+        else {
+          rightWall=true;
+          inPropulse.side="right";
+        }
+      }
+      inPropulse.since++;
+
+      if(inPropulse.since==bouncePathRow.length-1) {
+        reboundPressed=false;
+        inPropulse.active=false;
+        inPropulse.since = 0;
+        if(!isDown() && !rightWall && !leftWall)
+          lockRebound=true;
+      }
+    }
+  }
 
   var offset = (playerYPos+playerYSpeed)%tileSize // ne pas pouvoir sauter et arriver dans l'épaisseur des plateformes
   if(offset !== 0 && (isDown() && !upPressed)) // mise à jour de la position du joueur
@@ -87,16 +121,18 @@ function updateGame() { // function to handle the game itself
 
   playerXPos+=playerXSpeed;
 
-  //eakPlatform();  // fonction qui permet les plateformes qui se détruisent
-  rebound(currentLevel); // rebondissements droite et gauche - collisions horizontales
+  //weakPlatform();  // fonction qui permet les plateformes qui se détruisent
+  rebound(currentLevel);
+  horizontalCollision(currentLevel); // collisions horizontales
   verticalCollision(currentLevel); // check for vertical collisions
-  if(!isDown()) {  // faire descendre le personnage si aucun sol sous sa position
+  if(!isDown() && !pause) {  // faire descendre le personnage si aucun sol sous sa position
     lockKeyup = true;
     playerYSpeed=movementSpeed;
     playerYPos+=playerYSpeed;
   }
   else {
     lockKeyup = false;
+    lockRebound = false;
     if(~~((playerYPos)/tileSize) > levelRows-5)  {// chute au fond d'un gouffre fait perdre toutes ses vies
       nbLives=0;
     }
@@ -117,8 +153,8 @@ function updateGame() { // function to handle the game itself
     }
   }
 
+  messages();
 
-  //console.log(Math.abs(playerXPos-oldPlayerPosX))
   if(playerXPos>translateOffset && playerXPos/tileSize<83) {// 83 == colonne à partir de laquelle la dernière colonne du niveau est affichée
     totalTranslateCameraX += oldPlayerPosX-playerXPos;
     context.translate(oldPlayerPosX-playerXPos,0);

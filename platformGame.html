@@ -1,21 +1,23 @@
+
 <html>
 	<head>
+		<meta charset="UTF-8">
 	 	<title></title>
 		<link rel="stylesheet" type="text/css" href="css/game.css">
 	</head>
 	<body>
 		<div>
-			<canvas id="canvas"></canvas>
 
+			<canvas id="canvas"></canvas>
+			<div id="gameOpacity"></div>
+			<div id="commandes">
+				<p>Pour SAUTER ou REBONDIR sur un mur, maintenir flèche haut, espace ou la touche Z appuyée</p>
+				<p>Pour se déplacer à DROITE , maintenir flèche droite ou la touche D appuyée</p>
+				<p>Pour se déplacer à GAUCHE , maintenir flèche gauche ou la touche Q appuyée</p>
+			</div>
 			<div id="messages">
-				<img id="bcbs" src="pictures/bcbsSpeaking.png">
-				<span>Attention DataBoo te voilà parti sur le long chemin
-							de la donnée, tout au long de celui-ci, tu risques de
-							rencontrer plein de petites données. Parmi elles,
-							certaines sont bonnes et viendront renforcer ton
-							équipe, mais d’autres sont de mauvaise qualité, à toi
-							de les éviter…
-				</span>
+					<img id="bcbs" src="pictures/bcbsSpeaking.png">
+				<span></span>
 				<span>Tu viens de rencontrer ta première bonne donnée !!
 							Continue comme ça !
 				</span>
@@ -27,23 +29,19 @@
 							celui d'intégrité !! C'est normal, le premier s'effectue au plus
 							proche de l'endroit d'où viennent les données et le second
 							s'effectue toujours en début de parcours !
-							Voyons cela de plus près... D'après le contrôle d'exactitude tu as
-							récupérés X bonnes données différentes dans ton équipe!
-							Le contrôle d'unicité indique Y mauvaises données, mais cela ne
-							veut pas dire qu'elles sont méchantes pour autant, certaines
-							données étaient simplement des doublons !
 				</span>
+				<span></span>
 				<span>Aie aie aie... Tu viens de rencontrer une anomalie !!
-							On a beau faire attention, ça peut toujours arriver
+							 On a beau faire attention, ça peut toujours arriver.
 				</span>
-				<span>Voici le contrôle d'exhaustivité. Il doit s'effectuer à chaque étape de la
+				<span>Voici le contrôle d'exhaustivité . Il doit s'effectuer à chaque étape de la
 							chaîne de traitement dès lors que des chemins se réunissent ou se
-							croisent. Il vérifie la complétude d'un périmètre par rapport à un
+							croisent . Il vérifie la complétude d'un périmètre par rapport à un
 							axe d'analyse (Tiers, produit...).
 				</span>
 				<span>Voici un partenariat ! Il est important d'en instaurer entre le
 							consommateur et le fournisseur de la donnée à chaque maillon de la
-							chaîne
+							chaîne.
 				</span>
 				<span>
 					Tu viens de passer ton dernier contrôle : Le contrôle d'actualité !!
@@ -57,9 +55,17 @@
 					Maintenant que tu as réuni ton équipe, tu vas pouvoir reconstruire Report
 					Square.
 				</span>
+				<span>
+					Ho non tu n'as plus de vies ...
+				</span>
 			</div>
 
 	</div>
+		<script
+		  src="https://code.jquery.com/jquery-3.3.1.min.js"
+		  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		  crossorigin="anonymous">
+		</script>
 		<script src="js/variables.js"></script>
 		<script src="js/messages.js"></script>
 		<script src="js/functions.js"></script>

@@ -6,7 +6,7 @@ function renderLevel(){
 
 
 //image de fond
-//context.drawImage(imgBackground,tileSize,tileSize,tileSize*levelCols,tileSize*levelRows);
+context.drawImage(imgBackground,tileSize,tileSize,tileSize*levelCols,tileSize*levelRows);
 
 
 
@@ -30,9 +30,9 @@ function renderLevel(){
         context.fillStyle = "#aeaca2"; // gris clair
         context.fillRect(j*tileSize,i*tileSize,tileSize,tileSize);
       }
-     if(currentLevel[i][j]==0){
+  /*   if(currentLevel[i][j]==0){
         context.clearRect(j*tileSize,i*tileSize,tileSize,tileSize); // permettait d'effécer les répétitions avant d'avoir l'image de fond
-      }
+      }*/
     }
   }
   if(currentLevel===level1) {
@@ -46,30 +46,35 @@ function renderLevel(){
     level3Mechanics();
   }
 
-  context.fillStyle = "rgba(0, 0, 0, 0.5)";
-  context.font="15px Arial";
-  if(points.obstacle || points.hurtBadData) {
-
-    context.fillText("-3 pts",playerXPos,playerYPos-tileSize)
-    setTimeout(()=>{
-      points.obstacle=false;
-      points.hurtBadData=false;
-    },1000);
-  }
-
+// affichage des points au dessus de la tete du joueur
+context.fillStyle = "rgba(0, 0, 0, 0.5)";
+context.font="15px Arial";
+if(points.obstacle || points.hurtBadData) {
+  texte.push('-3 pts')
+  setTimeout(()=> {
+    texte.splice(texte.indexOf('-3 pts'),1)
+  },1000);
+}
 if(points.goodData || points.heart) {
-  context.fillText("+10 pts",playerXPos,playerYPos-tileSize)
-  setTimeout(()=>{
-    points.goodData=false;
-    points.heart=false;
+  texte.push('+10 pts')
+  setTimeout(()=> {
+    texte.splice(texte.indexOf('+10 pts'),1)
   },1000);
 }
 if(points.killBadData) {
-  context.fillText("+3 pts",playerXPos,playerYPos-tileSize)
-  setTimeout(()=>{
-    points.killBadData=false;
+  texte.push('+3 pts')
+  setTimeout(()=> {
+    texte.splice(texte.indexOf('+3 pts'),1)
   },1000);
 }
+for(let i=0; i<texte.length; i++) {
+  context.fillText(texte[i],playerXPos,playerYPos-tileSize-i*tileSize)
+}
+points.goodData=false;
+points.heart=false;
+points.killBadData=false;
+points.obstacle=false;
+points.hurtBadData=false;
 
 
   // player = green box
@@ -120,13 +125,18 @@ context.fillText("X "+nbLives,5*tileSize-totalTranslateCameraX, 3*tileSize);
   }*/
 
 
-  if(pause) {
-    context.fillStyle = "rgba(0, 0, 0, 0.2)"; // marron foncé
-    context.fillRect(0*tileSize-totalTranslateCameraX,0*tileSize,73*tileSize,34*tileSize);
-    upPressed=false;
-    leftPressed=false;
-    rightPressed=false;
-  }
+if(pause) {
+  imgBCBS.style.opacity="1";
+  gameOpacity.style.opacity = "1";
+  upPressed=false;
+  leftPressed=false;
+  rightPressed=false;
+}
+else {
+  imgBCBS.style.opacity="0";
+  gameOpacity.style.opacity = "0";
+}
+
 
   if(anomaly) {
     pause=true;

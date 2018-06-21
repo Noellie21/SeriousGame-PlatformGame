@@ -26,10 +26,12 @@ function level1Mechanics() {
   for (k=0; k<badDataRow.length; k++) {
     context.drawImage(imgBadData, badDataCol[k]*tileSize,badDataRow[k]*tileSize,tileSize*3,tileSize*3);
     if(isNear(badDataRow[k],badDataCol[k])) {
+      touched = true;
       isHurt(badDataCol[k]);
       beatBackPlayer(badDataCol[k])
     }
     if (cruchBadData(badDataRow[k],badDataCol[k])) {
+      touched = true;
       badDataRow.splice(k,1);
       badDataCol.splice(k,1);
       score+=3;
@@ -58,8 +60,9 @@ function level2Mechanics() {
       context.drawImage(imgWheel, (obstacleCol[k])*tileSize,(obstacleRow[k])*tileSize,tileSize*2,tileSize*2);
     }
     if(isNear(obstacleRow[k],obstacleCol[k])) {
-      isHurt(obstacleCol[k]);
       beatBackPlayer(obstacleCol[k]);
+      isHurt(obstacleCol[k]);
+
     }
   }
   if(isNear(19,60+73) && !anomaly) // position du gros obstacle
@@ -75,6 +78,7 @@ function level3Mechanics() {
     heartCol.splice(k,1);
     points.heart=true;
     nbHeart++;
+    score+=10;
     }
   }
   context.fillStyle = "rgba(0, 0, 0, 0.2)";
